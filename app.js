@@ -12,7 +12,7 @@ const User = require("./models/User");
 const env = require("node-env-file")("./.env");
 const port = process.env.PORT || 3000;
 const onlineChatUsers = {};
-const mysql2 = require('mysql2');
+// const mysql2 = require('mysql2');
 
 dotenv.config();
 
@@ -31,34 +31,27 @@ app.use(
     })
 );
 
-let connection = mysql2.createConnection({
-    host: 'localhost',
-    port     : '3306',
-    user: 'root',
-    password: 'root',
-    database: 'business2business'
-});
+// let connection = mysql2.createConnection({
+//     host: 'localhost',
+//     port     : '3306',
+//     user: 'root',
+//     password: 'root',
+//     database: 'business2business'
+// });
 
-connection.connect(function(err) {
-    if (err) {
-        return console.error('error: ' + err.message);
-    }
+// connection.connect(function(err) {
+//     if (err) {
+//         return console.error('error: ' + err.message);
+//     }
 
-    console.log('Connected to the MySQL server.');
-});
+//     console.log('Connected to the MySQL server.');
+// });
 
 // Set up passport for authentication
 app.use(passport.initialize());
 app.use(passport.session());
 // passport.use(new LocalStrategy(User.authenticate()));
-passport.use(new LocalStrategy((username, password, done) => {
-    connection.query(`SELECT * FROM login where user_name='${username}' and password='${password}'`, (err, user) => {
-        console.log(user);
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        return done(null, user);
-    });
-}));
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
